@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Keyboard
 } from "react-native";
 
 import PickerCoins from "./src/components/PickerCoins/PickerCoins";
@@ -52,23 +53,26 @@ export default function App() {
     if(coinSelected === null || coinValue === 0 ){
       alert('Por favor selecione a moeda');
       return;
+    }else{
+
+      const res = await api.get(`all/${coinSelected}-BRL`);
+      console.log(res.data )
+  
+  
+      let ResultCoin = (res.data[coinSelected].ask * parseFloat(coinValue) )
+  
+      setValorConvertido(`R$ ${ResultCoin.toFixed(2)}`);
+      setCoinValue(coinValue)
+
+      //fecha o teclado, caso ele estiver aberto
+      Keyboard.dismiss();
     }
-
-    const res = await api.get(`all/${coinSelected}-BRL`);
-    console.log(res.data )
-
-
-    let ResultCoin = (res.data[coinSelected].ask * parseFloat(coinValue) )
-
-    setValorConvertido(`R$ ${ResultCoin.toFixed(2)}`);
-    setCoinValue(coinValue)
-
-
   }
 
   if (loading) {
     return (
       <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+        {/* Loading nativo do react */}
         <ActivityIndicator color="#FFF" size={45} />
       </View>
     );
@@ -108,7 +112,7 @@ export default function App() {
           <View style={styles.ViewResult}>
             <Text style={styles.ValueConvertText}> {coinValue} {coinSelected}</Text>
             <Text style={styles.ValueConvertText}>Corresponde a</Text>
-            <Text style={styles.ValueConvertText}>R$ {valorConvertido} </Text>
+            <Text style={styles.ValueConvertText}>{valorConvertido} </Text>
           </View>
         )}
       </View>
